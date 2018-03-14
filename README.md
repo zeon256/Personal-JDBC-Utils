@@ -8,6 +8,8 @@ repositories {
     jcenter()
 }
 dependencies {
+  compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+  compile 'com.google.code.gson:gson:2.8.2'
   compile 'com.budinverse.utils:Personal-JDBC-Utils:0.1'
 }
 
@@ -60,4 +62,12 @@ fun getPersons() = queryMulti("SELECT * FROM person WHERE name = ?", {
   it.setString(1,name)
 }, { it.toPerson() })
 
+```
+
+## Others
+Changing `Config.json`
+```kotlin
+fun main(args: Array<String>) {
+    setConfigFile("filename.json")
+}
 ```
