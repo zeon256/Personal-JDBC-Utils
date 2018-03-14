@@ -1,7 +1,9 @@
+ [ ![Download](https://api.bintray.com/packages/budinverse/utils/JDBCUtils/images/download.svg) ](https://bintray.com/budinverse/utils/JDBCUtils/_latestVersion)
+ [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
+ 
 # Personal-JDBC-Utils
 This is my personal jdbc utilities library to help me reduce retyping stuff mainly `(ie. Creating connection, closing connection)`.
-The user is still responsible for setting the query parameters.Click [here](https://bintray.com/budinverse/utils/JDBCUtils) for the Bintray.
-
+The user is still responsible for setting the query parameters.
 ## Gradle
 ```groovy
 repositories {
