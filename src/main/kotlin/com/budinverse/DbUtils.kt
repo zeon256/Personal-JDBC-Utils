@@ -5,7 +5,7 @@ import java.io.FileReader
 import java.sql.*
 
 
-typealias Statement = String
+private typealias Statement = String
 
 private class DbConfig(var databaseName: String = "",
              var databaseUser: String = "",
