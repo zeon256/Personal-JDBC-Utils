@@ -2,6 +2,17 @@
 This is my personal jdbc utilities library to help me reduce retyping stuff mainly `(ie. Creating connection, closing connection)`.
 The user is still responsible for setting the query parameters.
 
+## Gradle
+```groovy
+repositories {
+    jcenter()
+}
+dependencies {
+  compile 'com.budinverse.utils:Personal-JDBC-Utils:0.1'
+}
+
+```
+
 ## How to use?
 
 1. Create a Config.json file with the following details inside and put it at root directory of project. You should be able to 
