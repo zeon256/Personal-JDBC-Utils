@@ -1,6 +1,6 @@
 # Personal-JDBC-Utils
 This is my personal jdbc utilities library to help me reduce retyping stuff mainly `(ie. Creating connection, closing connection)`.
-The user is still responsible for setting the query parameters.
+The user is still responsible for setting the query parameters.Click [here](https://bintray.com/budinverse/utils/JDBCUtils) for the Bintray.
 
 ## Gradle
 ```groovy
