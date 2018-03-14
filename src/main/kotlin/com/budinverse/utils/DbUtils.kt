@@ -1,4 +1,4 @@
-package com.budinverse
+package com.budinverse.utils
 
 import com.google.gson.Gson
 import java.io.FileReader
@@ -12,13 +12,16 @@ private class DbConfig(var databaseName: String = "",
              var databasePassword: String = "")
 
 fun setConfigFile(cfgFile:String = "Config.json"){ configFile = cfgFile }
+fun setJdbcDriver(_driver: String = "com.mysql.cj.jdbc.Driver"){ driver = _driver }
 
 private var configFile:String = "Config.json"
+private var driver:String = "com.mysql.cj.jdbc.Driver"
+
 private val dbConfig: DbConfig =
         Gson().fromJson<DbConfig>(FileReader(configFile), DbConfig::class.java)
 
 private fun getDbConnection(): Connection? {
-    val jdbcDriver = "com.mysql.cj.jdbc.Driver"
+    val jdbcDriver = driver
     val dbUrl= "jdbc:mysql://localhost/" +
             "${dbConfig.databaseName}?" +
             "useLegacyDatetimeCode=false&serverTimezone=UTC" +
@@ -40,7 +43,9 @@ private fun getDbConnection(): Connection? {
  */
 private fun Statement.genPreparedStatement(): PreparedStatement? {
     if(this.isEmpty()) return null
-    val conn = try { getDbConnection() } catch (e: SQLException) { e.printStackTrace(); null}
+    val conn = try {
+        getDbConnection()
+    } catch (e: SQLException) { e.printStackTrace(); null}
     return conn?.prepareStatement(this)
 }
 
@@ -57,7 +62,7 @@ fun <T> query(statement: Statement, blockOne:(PreparedStatement) -> Unit, blockT
     val rs = ps.executeQuery()
     return if(rs.next()) {
         val temp = blockTwo(rs)
-        closeAll(ps,rs,ps.connection)
+        closeAll(ps, rs, ps.connection)
         temp
     } else null
 }
@@ -77,7 +82,7 @@ fun <T> queryMulti(statement: Statement, blockOne:(PreparedStatement) -> Unit, b
     val rs = ps.executeQuery()
 
     while(rs.next()) { arList.add(blockTwo(rs)) }
-    closeAll(ps,rs,ps.connection)
+    closeAll(ps, rs, ps.connection)
 
     return arList
 }

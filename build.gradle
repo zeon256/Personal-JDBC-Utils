@@ -3,19 +3,46 @@ buildscript {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     }
 }
 
-group 'Personal-JDBC-Utils'
-version '1.0'
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
+group 'com.budinverse.utils'
+version '0.1'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
+
+Properties properties = new Properties()
+try {
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+}
+catch (Exception ignored) {
+}
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+    pkg {
+        repo = "utils"
+        name = "JDBCUtils"
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/BudiNverse/Personal-JDBC-Utils.git'
+    }
+}
 
 repositories {
     mavenCentral()
@@ -33,4 +60,13 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
 }
