@@ -41,6 +41,22 @@ fun insertPerson(person:Person) = manipulate("INSERT INTO person VALUES (?,?)",{
   it.setInt(2,person.age)
 })
 ```
+Java Example
+```java
+private static int insertPerson(Person person) {
+   return DbUtilsKt.manipulate("INSERT INTO person VALUES (?,?)",
+        (PreparedStatement x) -> {
+             try {
+                 x.setString(1, person.getName());
+                 x.setInt(2, person.getAge());
+              } catch (SQLException e) {
+                  e.printStackTrace();
+              }
+              return Unit.INSTANCE;
+        });
+    }
+```
+
 
 3. Query Single Result.
 Assume that there is an extension function that converts ResultSet to to Person object
@@ -52,17 +68,35 @@ fun getPersonByName(name:String) = query("SELECT * FROM person WHERE name = ?", 
 }, { it.toPerson() })
 
 ```
+Java Example
+```java
+private static Person getPersonByName(String name){
+    return DbUtilsKt.query("SELECT * FROM person WHERE name = ?",
+          (PreparedStatement x) -> {
+               try {
+                   x.setString(1, name);
+               } catch (SQLException e) {
+                  e.printStackTrace();
+               }
+                  return Unit.INSTANCE;
+             },PersonKt::toPerson);
+    }
+```
 
 4. Query Multiple Results.
 Multiple results returns and arraylist of said object
 ```kotlin
-
 /* Example */
-fun getPersons() = queryMulti("SELECT * FROM person WHERE name = ?", {
-  it.setString(1,name)
-}, { it.toPerson() })
-
+fun getPersons() = queryMulti("SELECT * FROM person", {}, { it.toPerson() })
 ```
+
+Java Example
+```java
+private static ArrayList<Person> getPersons(){
+    return DbUtilsKt.queryMulti("SELECT * FROM person", (PreparedStatement x) -> Unit.INSTANCE,PersonKt::toPerson);
+}
+```
+
 
 ## Others
 Changing `Config.json`
