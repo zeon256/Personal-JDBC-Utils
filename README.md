@@ -8,8 +8,8 @@ repositories {
     jcenter()
 }
 dependencies {
-  compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
-  compile 'com.google.code.gson:gson:2.8.2'
+  compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6' //depends on the driver you need
+  compile 'com.google.code.gson:gson:2.8.2' //needed to parse Json file
   compile 'com.budinverse.utils:Personal-JDBC-Utils:0.1'
 }
 
