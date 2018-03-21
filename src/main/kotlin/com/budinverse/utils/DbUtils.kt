@@ -7,30 +7,28 @@ import java.sql.*
 
 private typealias Statement = String
 
-private class DbConfig(var databaseName: String = "",
-             var databaseUser: String = "",
-             var databasePassword: String = "")
+private class DbConfig(var databaseUser: String = "",
+                       var databasePassword: String = "",
+                       var databaseUrl: String = "",
+                       var driver: String = "")
 
-fun setConfigFile(cfgFile:String = "Config.json"){ configFile = cfgFile }
-fun setJdbcDriver(_driver: String = "com.mysql.cj.jdbc.Driver"){ driver = _driver }
+fun setConfigFile(cfgFile: String = "Config.json") {
+    configFile = cfgFile
+}
 
-private var configFile:String = "Config.json"
-private var driver:String = "com.mysql.cj.jdbc.Driver"
+private var configFile: String = "Config.json"
 
 private val dbConfig: DbConfig =
         Gson().fromJson<DbConfig>(FileReader(configFile), DbConfig::class.java)
 
 private fun getDbConnection(): Connection? {
-    val jdbcDriver = driver
-    val dbUrl= "jdbc:mysql://localhost/" +
-            "${dbConfig.databaseName}?" +
-            "useLegacyDatetimeCode=false&serverTimezone=UTC" +
-            "&useSSL=false"
+    val jdbcDriver = dbConfig.driver
+    val dbUrl = dbConfig.databaseUrl
 
     return try {
         Class.forName(jdbcDriver)
         DriverManager.getConnection(dbUrl, dbConfig.databaseUser, dbConfig.databasePassword)
-    }catch (e:Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
         null
     }
@@ -42,10 +40,12 @@ private fun getDbConnection(): Connection? {
  * @return null     if empty String or error getting database connection
  */
 private fun Statement.genPreparedStatement(): PreparedStatement? {
-    if(this.isEmpty()) return null
+    if (this.isEmpty()) return null
     val conn = try {
         getDbConnection()
-    } catch (e: SQLException) { e.printStackTrace(); null}
+    } catch (e: SQLException) {
+        e.printStackTrace(); null
+    }
     return conn?.prepareStatement(this)
 }
 
@@ -56,11 +56,11 @@ private fun Statement.genPreparedStatement(): PreparedStatement? {
  * @param blockTwo      A function which takes in ResultSet
  * @return T            : Whatever stuff done to ResultSet, eg. Making a User Object from queried results
  */
-fun <T> query(statement: Statement, blockOne:(PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T):T? {
+fun <T> query(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): T? {
     val ps = statement.genPreparedStatement() ?: return null
     blockOne(ps)
     val rs = ps.executeQuery()
-    return if(rs.next()) {
+    return if (rs.next()) {
         val temp = blockTwo(rs)
         closeAll(ps, rs, ps.connection)
         temp
@@ -75,13 +75,15 @@ fun <T> query(statement: Statement, blockOne:(PreparedStatement) -> Unit, blockT
  * @return T            : Whatever stuff done to ResultSet, eg. Making a User Object from queried results
  *                      and returns arrayListOf<T>
  */
-fun <T> queryMulti(statement: Statement, blockOne:(PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T):ArrayList<T> {
+fun <T> queryMulti(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): ArrayList<T> {
     val arList = arrayListOf<T>()
     val ps = statement.genPreparedStatement() ?: return arList
     blockOne(ps)
     val rs = ps.executeQuery()
 
-    while(rs.next()) { arList.add(blockTwo(rs)) }
+    while (rs.next()) {
+        arList.add(blockTwo(rs))
+    }
     closeAll(ps, rs, ps.connection)
 
     return arList
@@ -115,7 +117,7 @@ fun manipulate(statement: Statement, block: (PreparedStatement) -> Unit): Int {
  * @param rs        ResultSet
  * @param conn      Connection
  */
-private fun closeAll(ps: PreparedStatement, rs: ResultSet?, conn: Connection){
+private fun closeAll(ps: PreparedStatement, rs: ResultSet?, conn: Connection) {
     ps.close()
     rs?.close()
     conn.close()
