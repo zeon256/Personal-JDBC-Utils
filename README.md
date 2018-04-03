@@ -18,7 +18,7 @@ dependencies {
 
 ## How to use?
 
-1. Create a Config.json file with the following details inside and put it at root directory of project. You should be able to 
+1. Create a dbConfig.properties file with the following details inside and put it at root directory of project. You should be able to 
 use the library already.
 ```properties
 databaseUser = yourDatabaseUser

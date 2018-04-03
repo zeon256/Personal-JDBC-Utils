@@ -16,7 +16,7 @@ plugins {
 }
 
 group 'com.budinverse.utils'
-version '0.2'
+version '0.3'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
