@@ -11,7 +11,6 @@ repositories {
 }
 dependencies {
   compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6' //depends on the driver you need
-  compile 'com.google.code.gson:gson:2.8.2' //needed to parse Json file
   compile 'com.budinverse.utils:Personal-JDBC-Utils:<latest version>'
 }
 
@@ -21,13 +20,11 @@ dependencies {
 
 1. Create a Config.json file with the following details inside and put it at root directory of project. You should be able to 
 use the library already.
-```json
-{
-  "databaseUser":"yourDatabaseUsername",
-  "databasePassword":"yourDatabasePassword",
-  "databaseUrl":"yourFullDatabaseUrl",
-  "driver":"yourDatabaseDriver"
-}
+```properties
+databaseUser = yourDatabaseUser
+databasePassword = yourDatabasePassword
+databaseUrl = yourDatbaseUrl
+driver = yourDatabaseDriver
 ```
 
 2. INSERT/UPDATE/DELETE Statements
@@ -66,9 +63,8 @@ Assume that there is an extension function that converts ResultSet to to Person 
 ```kotlin
 
 /* Example */
-fun getPersonByName(name:String) = query("SELECT * FROM person WHERE name = ?", {
-  it.setString(1,name)
-}, { it.toPerson() })
+fun getPersonByName(name:String) = 
+    query("SELECT * FROM person WHERE name = ?", { it.setString(1,name) }, { it.toPerson() })
 
 ```
 Java Example
@@ -105,6 +101,8 @@ private static ArrayList<Person> getPersons(){
 Changing `Config.json`
 ```kotlin
 fun main(args: Array<String>) {
-    setConfigFile("filename.json")
+    setConfigFile("filename.properties") 
+    //can only be set once, setting more than once will
+    //result in error
 }
 ```

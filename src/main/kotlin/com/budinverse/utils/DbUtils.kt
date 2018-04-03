@@ -1,25 +1,39 @@
 package com.budinverse.utils
 
-import com.google.gson.Gson
-import java.io.FileReader
+import java.io.FileInputStream
 import java.sql.*
+import java.util.*
 
 
 private typealias Statement = String
 
-private class DbConfig(var databaseUser: String = "",
-                       var databasePassword: String = "",
-                       var databaseUrl: String = "",
-                       var driver: String = "")
+class DbConfig(var databaseUser: String,
+               var databasePassword: String,
+               var databaseUrl: String,
+               var driver: String)
 
-fun setConfigFile(cfgFile: String = "Config.json") {
+
+fun setConfigFile(cfgFile: String = "dbConfig.properties") {
+    require(noOfTimesCalled == 0) { "Config already set once!" }
     configFile = cfgFile
+    noOfTimesCalled++
+
+    val prop = Properties()
+    val input = FileInputStream(configFile)
+
+    prop.load(input)
+
+    /* create config from input */
+    dbConfig = DbConfig(databaseUser = prop.getProperty("databaseUser"),
+            databasePassword = prop.getProperty("databasePassword"),
+            databaseUrl = prop.getProperty("databaseUrl"),
+            driver = prop.getProperty("driver"))
 }
 
-private var configFile: String = "Config.json"
+private lateinit var configFile: String
+lateinit var dbConfig: DbConfig
 
-private val dbConfig: DbConfig =
-        Gson().fromJson<DbConfig>(FileReader(configFile), DbConfig::class.java)
+private var noOfTimesCalled = 0
 
 private fun getDbConnection(): Connection? {
     val jdbcDriver = dbConfig.driver
@@ -102,7 +116,6 @@ fun manipulate(statement: Statement, block: (PreparedStatement) -> Unit): Int {
     return try {
         val rs = ps.executeUpdate()
         closeAll(ps, null, ps.connection)
-
         rs
     } catch (e: Exception) {
         e.printStackTrace()
