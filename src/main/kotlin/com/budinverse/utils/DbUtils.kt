@@ -31,7 +31,7 @@ fun setConfigFile(cfgFile: String = "dbConfig.properties") {
 }
 
 private lateinit var configFile: String
-lateinit var dbConfig: DbConfig
+private lateinit var dbConfig: DbConfig
 
 private var noOfTimesCalled = 0
 
