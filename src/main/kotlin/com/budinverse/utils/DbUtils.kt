@@ -7,12 +7,17 @@ import java.util.*
 
 private typealias Statement = String
 
-class DbConfig(var databaseUser: String,
-               var databasePassword: String,
-               var databaseUrl: String,
-               var driver: String)
+internal class DbConfig(val databaseUser: String,
+                        val databasePassword: String,
+                        val databaseUrl: String,
+                        val driver: String)
 
-
+/**
+ * Sets the config file to import which will then be
+ * used to make all the connections to the database.
+ * This should be called only once
+ * @param cfgFile       a properties file
+ */
 fun setConfigFile(cfgFile: String = "dbConfig.properties") {
     require(noOfTimesCalled == 0) { "Config already set once!" }
     configFile = cfgFile
@@ -35,6 +40,10 @@ private lateinit var dbConfig: DbConfig
 
 private var noOfTimesCalled = 0
 
+/**
+ * Gets the database connection based on the config file provided
+ * @return Connection?
+ */
 private fun getDbConnection(): Connection? {
     val jdbcDriver = dbConfig.driver
     val dbUrl = dbConfig.databaseUrl
@@ -70,7 +79,7 @@ private fun Statement.genPreparedStatement(): PreparedStatement? {
  * @param blockTwo      A function which takes in ResultSet
  * @return T            : Whatever stuff done to ResultSet, eg. Making a User Object from queried results
  */
-fun <T> query(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): T? {
+internal inline fun <T> query(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): T? {
     val ps = statement.genPreparedStatement() ?: return null
     blockOne(ps)
     val rs = ps.executeQuery()
@@ -89,7 +98,7 @@ fun <T> query(statement: Statement, blockOne: (PreparedStatement) -> Unit, block
  * @return T            : Whatever stuff done to ResultSet, eg. Making a User Object from queried results
  *                      and returns arrayListOf<T>
  */
-fun <T> queryMulti(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): ArrayList<T> {
+internal inline fun <T> queryMulti(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): ArrayList<T> {
     val arList = arrayListOf<T>()
     val ps = statement.genPreparedStatement() ?: return arList
     blockOne(ps)
@@ -110,7 +119,7 @@ fun <T> queryMulti(statement: Statement, blockOne: (PreparedStatement) -> Unit, 
  * @param block         A function which takes in PreparedStatement
  * @return Int          Number of rows added
  */
-fun manipulate(statement: Statement, block: (PreparedStatement) -> Unit): Int {
+internal inline fun manipulate(statement: Statement, block: (PreparedStatement) -> Unit): Int {
     val ps = statement.genPreparedStatement() ?: return 0
     block(ps)
     return try {
