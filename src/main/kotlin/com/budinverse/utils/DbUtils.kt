@@ -7,7 +7,7 @@ import java.util.*
 
 private typealias Statement = String
 
-internal class DbConfig(val databaseUser: String,
+private class DbConfig(val databaseUser: String,
                         val databasePassword: String,
                         val databaseUrl: String,
                         val driver: String)
