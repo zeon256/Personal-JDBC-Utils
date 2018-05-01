@@ -50,8 +50,8 @@ Assuming you have a Person data class and you want to insert into the person tab
 ```kotlin
 /* Example */
 fun insertPerson(person:Person) = manipulate("INSERT INTO person VALUES (?,?)",{
-  it.setString(1,person.name)
-  it.setInt(2,person.age)
+  it[1] = person.email
+  it[2] = person.name
 })
 ```
 
@@ -60,7 +60,7 @@ fun insertPerson(person:Person) = manipulate("INSERT INTO person VALUES (?,?)",{
 ```kotlin
 /* Example */
 fun getPersonByName(name:String) = 
-    query("SELECT * FROM person WHERE name = ?", { it.setString(1,name) }, ::Person)
+    query("SELECT * FROM person WHERE name = ?", { it[1] = name }, ::Person)
 ```
 
 4. Query Multiple Results.
@@ -68,5 +68,15 @@ Multiple results returns and arraylist of said object
 ```kotlin
 /* Example */
 fun getPersons() = queryMulti("SELECT * FROM person", ::Person)
+```
+
+## Experimental
+All implementations in experimental packages have not been tested for performance
+
+#### Set all 
+```kotlin
+query("SELECT * FROM person WHERE email = ? AND name = ?",{
+        it.setAllValues(data.email,data.name)
+    } ,::Person)
 ```
 
