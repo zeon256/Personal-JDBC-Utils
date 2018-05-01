@@ -74,6 +74,25 @@ Multiple results returns and arraylist of said object
 fun getPersons() = queryMulti("SELECT * FROM person", ::Person)
 ```
 
+## Transaction Support
+```kotlin
+val txn = transaction {
+        manipulateTxn("INSERT INTO Person (email,name) VALUES (?,?)",{
+            it[1] = data.email
+            it[2] = data.name
+        })
+        manipulateTxn("UPDATE Person set email = ?, name = ? ",{
+            it[1] = data2.email
+            it[2] = data2.name
+        })
+    }
+    // first run will run but second run won't as email is primary key
+    if(txn == null) 
+        println("Fail")
+    else 
+        println("!Fail")
+```
+
 ## Experimental
 All implementations in experimental packages have not been tested for performance
 
