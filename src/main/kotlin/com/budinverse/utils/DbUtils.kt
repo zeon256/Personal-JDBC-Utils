@@ -132,6 +132,8 @@ internal inline fun manipulate(statement: Statement, block: (PreparedStatement) 
     }
 }
 
+internal operator fun <T> ResultSet.get(index: Int): T = this.getObject(index) as T
+
 /**
  * Closes all database connection
  * Should only be called after operations done
