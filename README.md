@@ -4,6 +4,10 @@
 # Personal-JDBC-Utils
 This is my small personal jdbc utilities library to help me reduce retyping stuff mainly `(ie. Creating connection, closing connection)`.
 The user is still responsible for setting the query parameters.
+
+## Note
+Version 0.4 and 0.4.1 IS BUGGY and SHOULD NOT BE USED.
+
 ## Gradle
 ```groovy
 repositories {

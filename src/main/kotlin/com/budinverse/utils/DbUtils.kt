@@ -43,7 +43,7 @@ private var noOfTimesCalled = 0
  * Gets the database connection based on the config file provided
  * @return Connection?
  */
-private fun getDbConnection(): Connection? {
+fun getDbConnection(): Connection? {
     val jdbcDriver = dbConfig.driver
     val dbUrl = dbConfig.databaseUrl
 
@@ -69,6 +69,26 @@ fun Statement.genPreparedStatementFromStatement(): PreparedStatement? {
         e.printStackTrace(); null
     }
     return conn?.prepareStatement(this)
+}
+
+inline fun transaction(block: () -> PreparedStatement): Unit? {
+    val dbConnection = getDbConnection() ?: return null
+    return try {
+        dbConnection.autoCommit = false
+        val ps = block()
+        dbConnection.commit()
+        closeAll(ps, null, dbConnection)
+    } catch (e: SQLException) {
+        dbConnection.rollback()
+        null
+    }
+}
+
+inline fun manipulateTxn(statement: Statement, block: (PreparedStatement) -> Unit): PreparedStatement? {
+    val ps = statement.genPreparedStatementFromStatement() ?: return null
+    block(ps)
+    ps.executeUpdate()
+    return ps
 }
 
 /**
