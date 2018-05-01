@@ -84,9 +84,11 @@ inline fun transaction(block: () -> PreparedStatement): Unit? {
     }
 }
 
-inline fun manipulateTxn(statement: Statement, block: (PreparedStatement) -> Unit): PreparedStatement? {
-    val ps = statement.genPreparedStatementFromStatement() ?: return null
-    block(ps)
+inline fun manipulateTxn(statement: Statement, block: (PreparedStatement) -> Unit): PreparedStatement {
+    val ps = statement.genPreparedStatementFromStatement()
+    requireNotNull(ps) { "Invalid PreparedStatement" }
+
+    block(ps!!)
     ps.executeUpdate()
     return ps
 }
