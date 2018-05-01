@@ -113,6 +113,26 @@ internal inline fun <T> queryMulti(statement: Statement, blockOne: (PreparedStat
 }
 
 /**
+ * Queries the database given params, which closes all connection after operations are done
+ * @param statement     SQL Statement
+ * @param blockOne      A function which takes in ResultSet
+ * @return T            : Whatever stuff done to ResultSet, eg. Making a User Object from queried results
+ *                      and returns arrayListOf<T>
+ */
+internal inline fun <T> queryMulti(statement: Statement, blockOne: (ResultSet) -> T): ArrayList<T> {
+    val arList = arrayListOf<T>()
+    val ps = statement.genPreparedStatement() ?: return arList
+    val rs = ps.executeQuery()
+
+    while (rs.next()) {
+        arList.add(blockOne(rs))
+    }
+    closeAll(ps, rs, ps.connection)
+
+    return arList
+}
+
+/**
  * Inserts into the database given params, which closes all connection after operations are done
  * Statement can be CREATE,UPDATE,DELETE
  * @param statement     SQL Statement
