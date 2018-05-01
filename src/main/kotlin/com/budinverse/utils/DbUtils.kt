@@ -164,5 +164,5 @@ fun closeAll(ps: PreparedStatement, rs: ResultSet?, conn: Connection) {
     conn.close()
 }
 
-internal operator fun <T> ResultSet.get(index: Int): T = this.getObject(index) as T
-internal operator fun <T> PreparedStatement.set(index: Int, data: T): Unit = this.setObject(index,data)
+operator fun <T> ResultSet.get(index: Int): T = this.getObject(index) as T
+operator fun <T> PreparedStatement.set(index: Int, data: T): Unit = this.setObject(index, data)
