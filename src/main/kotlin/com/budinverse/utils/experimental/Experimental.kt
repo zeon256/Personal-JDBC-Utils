@@ -1,11 +1,16 @@
 package com.budinverse.utils.experimental
 
-import com.budinverse.utils.get
 import com.budinverse.utils.set
 import java.sql.PreparedStatement
-import java.sql.ResultSet
-import kotlin.reflect.KClass
 
+
+/**
+ * Experimental
+ *
+ * Performance issues with varargs at least according to
+ * https://sites.google.com/a/athaydes.com/renato-athaydes/posts/kotlinshiddencosts-benchmarks
+ *
+ */
 fun PreparedStatement.setAllValues(vararg data: Any) {
     for(i in 0 until data.size){ this[i+1] = data[i] }
 }
