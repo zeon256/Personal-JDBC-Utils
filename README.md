@@ -67,6 +67,6 @@ fun getPersonByName(name:String) =
 Multiple results returns and arraylist of said object
 ```kotlin
 /* Example */
-fun getPersons() = queryMulti("SELECT * FROM person", {}, ::Person)
+fun getPersons() = queryMulti("SELECT * FROM person", ::Person)
 ```
 

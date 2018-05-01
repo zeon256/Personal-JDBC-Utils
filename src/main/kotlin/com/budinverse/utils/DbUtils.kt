@@ -4,7 +4,6 @@ import java.io.FileInputStream
 import java.sql.*
 import java.util.*
 
-
 private typealias Statement = String
 
 private class DbConfig(val databaseUser: String,
@@ -62,7 +61,7 @@ private fun getDbConnection(): Connection? {
  * given a String.
  * @return null     if empty String or error getting database connection
  */
-private fun Statement.genPreparedStatement(): PreparedStatement? {
+private fun Statement.genPreparedStatementFromStatement(): PreparedStatement? {
     if (this.isEmpty()) return null
     val conn = try {
         getDbConnection()
@@ -80,7 +79,7 @@ private fun Statement.genPreparedStatement(): PreparedStatement? {
  * @return T            : Whatever stuff done to ResultSet, eg. Making a User Object from queried results
  */
 internal inline fun <T> query(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): T? {
-    val ps = statement.genPreparedStatement() ?: return null
+    val ps = statement.genPreparedStatementFromStatement() ?: return null
     blockOne(ps)
     val rs = ps.executeQuery()
     return if (rs.next()) {
@@ -100,7 +99,7 @@ internal inline fun <T> query(statement: Statement, blockOne: (PreparedStatement
  */
 internal inline fun <T> queryMulti(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): ArrayList<T> {
     val arList = arrayListOf<T>()
-    val ps = statement.genPreparedStatement() ?: return arList
+    val ps = statement.genPreparedStatementFromStatement() ?: return arList
     blockOne(ps)
     val rs = ps.executeQuery()
 
@@ -121,7 +120,7 @@ internal inline fun <T> queryMulti(statement: Statement, blockOne: (PreparedStat
  */
 internal inline fun <T> queryMulti(statement: Statement, blockOne: (ResultSet) -> T): ArrayList<T> {
     val arList = arrayListOf<T>()
-    val ps = statement.genPreparedStatement() ?: return arList
+    val ps = statement.genPreparedStatementFromStatement() ?: return arList
     val rs = ps.executeQuery()
 
     while (rs.next()) {
@@ -140,7 +139,7 @@ internal inline fun <T> queryMulti(statement: Statement, blockOne: (ResultSet) -
  * @return Int          Number of rows added
  */
 internal inline fun manipulate(statement: Statement, block: (PreparedStatement) -> Unit): Int {
-    val ps = statement.genPreparedStatement() ?: return 0
+    val ps = statement.genPreparedStatementFromStatement() ?: return 0
     block(ps)
     return try {
         val rs = ps.executeUpdate()
@@ -151,8 +150,6 @@ internal inline fun manipulate(statement: Statement, block: (PreparedStatement) 
         0
     }
 }
-
-internal operator fun <T> ResultSet.get(index: Int): T = this.getObject(index) as T
 
 /**
  * Closes all database connection
@@ -166,3 +163,6 @@ private fun closeAll(ps: PreparedStatement, rs: ResultSet?, conn: Connection) {
     rs?.close()
     conn.close()
 }
+
+internal operator fun <T> ResultSet.get(index: Int): T = this.getObject(index) as T
+internal operator fun <T> PreparedStatement.set(index: Int, data: T): Unit = this.setObject(index,data)
