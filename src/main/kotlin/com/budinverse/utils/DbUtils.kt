@@ -61,7 +61,7 @@ private fun getDbConnection(): Connection? {
  * given a String.
  * @return null     if empty String or error getting database connection
  */
-private fun Statement.genPreparedStatementFromStatement(): PreparedStatement? {
+fun Statement.genPreparedStatementFromStatement(): PreparedStatement? {
     if (this.isEmpty()) return null
     val conn = try {
         getDbConnection()
@@ -78,7 +78,7 @@ private fun Statement.genPreparedStatementFromStatement(): PreparedStatement? {
  * @param blockTwo      A function which takes in ResultSet
  * @return T            : Whatever stuff done to ResultSet, eg. Making a User Object from queried results
  */
-internal inline fun <T> query(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): T? {
+inline fun <T> query(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): T? {
     val ps = statement.genPreparedStatementFromStatement() ?: return null
     blockOne(ps)
     val rs = ps.executeQuery()
@@ -97,7 +97,7 @@ internal inline fun <T> query(statement: Statement, blockOne: (PreparedStatement
  * @return T            : Whatever stuff done to ResultSet, eg. Making a User Object from queried results
  *                      and returns arrayListOf<T>
  */
-internal inline fun <T> queryMulti(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): ArrayList<T> {
+inline fun <T> queryMulti(statement: Statement, blockOne: (PreparedStatement) -> Unit, blockTwo: (ResultSet) -> T): ArrayList<T> {
     val arList = arrayListOf<T>()
     val ps = statement.genPreparedStatementFromStatement() ?: return arList
     blockOne(ps)
@@ -118,7 +118,7 @@ internal inline fun <T> queryMulti(statement: Statement, blockOne: (PreparedStat
  * @return T            : Whatever stuff done to ResultSet, eg. Making a User Object from queried results
  *                      and returns arrayListOf<T>
  */
-internal inline fun <T> queryMulti(statement: Statement, blockOne: (ResultSet) -> T): ArrayList<T> {
+inline fun <T> queryMulti(statement: Statement, blockOne: (ResultSet) -> T): ArrayList<T> {
     val arList = arrayListOf<T>()
     val ps = statement.genPreparedStatementFromStatement() ?: return arList
     val rs = ps.executeQuery()
@@ -138,7 +138,7 @@ internal inline fun <T> queryMulti(statement: Statement, blockOne: (ResultSet) -
  * @param block         A function which takes in PreparedStatement
  * @return Int          Number of rows added
  */
-internal inline fun manipulate(statement: Statement, block: (PreparedStatement) -> Unit): Int {
+inline fun manipulate(statement: Statement, block: (PreparedStatement) -> Unit): Int {
     val ps = statement.genPreparedStatementFromStatement() ?: return 0
     block(ps)
     return try {
@@ -158,7 +158,7 @@ internal inline fun manipulate(statement: Statement, block: (PreparedStatement) 
  * @param rs        ResultSet
  * @param conn      Connection
  */
-private fun closeAll(ps: PreparedStatement, rs: ResultSet?, conn: Connection) {
+fun closeAll(ps: PreparedStatement, rs: ResultSet?, conn: Connection) {
     ps.close()
     rs?.close()
     conn.close()
