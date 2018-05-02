@@ -71,27 +71,49 @@ fun Statement.genPreparedStatementFromStatement(): PreparedStatement? {
     return conn?.prepareStatement(this)
 }
 
-inline fun transaction(block: () -> PreparedStatement): Unit? {
+fun Statement.genPreparedStatementFromStatementWithPK(): PreparedStatement? {
+    if (this.isEmpty()) return null
+    val conn = try {
+        getDbConnection()
+    } catch (e: SQLException) {
+        e.printStackTrace(); null
+    }
+    return conn?.prepareStatement(this, java.sql.Statement.RETURN_GENERATED_KEYS)
+}
+
+inline fun transaction(block: (Connection) -> Pair<PreparedStatement,Any?>): Unit? {
     val dbConnection = getDbConnection() ?: return null
     return try {
         dbConnection.autoCommit = false
-        val ps = block()
+        val ps = block(dbConnection)
         dbConnection.commit()
-        closeAll(ps, null, dbConnection)
+        closeAll(ps.component1(), null, dbConnection)
     } catch (e: SQLException) {
+        e.printStackTrace()
         dbConnection.rollback()
         null
     }
 }
 
-inline fun manipulateTxn(statement: Statement, block: (PreparedStatement) -> Unit): PreparedStatement {
-    val ps = statement.genPreparedStatementFromStatement()
+fun Statement.genPreparedStatementTxnWithPK(dbConnection: Connection): PreparedStatement =
+        dbConnection.prepareStatement(this, java.sql.Statement.RETURN_GENERATED_KEYS)
+
+inline fun manipulateTxn(statement: Statement,dbConnection: Connection,block: (PreparedStatement) -> Unit): Pair<PreparedStatement,Any?> {
+    val ps = statement.genPreparedStatementTxnWithPK(dbConnection)
     requireNotNull(ps) { "Invalid PreparedStatement" }
 
-    block(ps!!)
+    block(ps)
     ps.executeUpdate()
-    return ps
+
+    val rs = ps.generatedKeys
+    var pk:Any? = null
+    if(rs.next()){
+        pk = rs[1]
+    }
+
+    return Pair(ps,pk)
 }
+
 
 /**
  * Queries the database given params, which closes all connection after operations are done

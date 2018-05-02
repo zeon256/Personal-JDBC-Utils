@@ -76,20 +76,22 @@ fun getPersons() = queryMulti("SELECT * FROM person", ::Person)
 
 ## Transaction Support
 ```kotlin
-val txn = transaction {
-        manipulateTxn("INSERT INTO Person (email,name) VALUES (?,?)",{
+    val data = Person("budisyahiddin@gmail.com","budi")
+    val data2 = Person("budisyahiddin@gmail.xd","budixd")
+    val txn = transaction {
+        manipulateTxn("INSERT INTO Person (email,name) VALUES (?,?)",it,{
             it[1] = data.email
             it[2] = data.name
         })
-        manipulateTxn("UPDATE Person set email = ?, name = ? ",{
+        manipulateTxn("UPDATE Person set email = ?, name = ?",it,{
             it[1] = data2.email
             it[2] = data2.name
         })
     }
-    // first run will run but second run won't as email is primary key
-    if(txn == null) 
+    //second run of this will result in rollback
+    if(txn == null)
         println("Fail")
-    else 
+    else
         println("!Fail")
 ```
 
