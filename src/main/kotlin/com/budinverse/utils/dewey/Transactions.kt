@@ -6,7 +6,6 @@ import com.budinverse.utils.set
 import java.sql.Connection
 import java.sql.PreparedStatement
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.primaryConstructor
 
 fun transaction(block: TransactionBuilder.() -> Unit): Boolean {
     return try {
@@ -63,13 +62,14 @@ class TransactionBuilder
                 questions += "?,"
             }
 
-            questions.substring(0, questions.length - 1)
+            questions = questions.substring(0, questions.length - 1)
 
             val propertyValues = columns.map {it.get(obj)}.toTypedArray()
 
             //language=MYSQL-SQL
-            exec("INSERT INTO ${sameAsDB.tableNameInDB} ($columnsStr) VALUES ($questions)",
-                    propertyValues)
+            val statement = "INSERT INTO ${sameAsDB.tableNameInDB} ($columnsStr) VALUES ($questions)"
+
+            exec(statement, propertyValues)
         }
     }
 
