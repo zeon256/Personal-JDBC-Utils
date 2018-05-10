@@ -81,6 +81,7 @@ fun Statement.genPreparedStatementFromStatementWithPK(): PreparedStatement? {
     return conn?.prepareStatement(this, java.sql.Statement.RETURN_GENERATED_KEYS)
 }
 
+@Deprecated(message = "ded")
 inline fun transaction(block: (Connection) -> Pair<PreparedStatement,Any?>): Unit? {
     val dbConnection = getDbConnection() ?: return null
     return try {

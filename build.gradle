@@ -76,3 +76,8 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 artifacts {
     archives sourcesJar
 }
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
