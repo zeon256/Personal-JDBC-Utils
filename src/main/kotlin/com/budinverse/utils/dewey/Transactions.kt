@@ -5,6 +5,8 @@ import com.budinverse.utils.getDbConnection
 import com.budinverse.utils.set
 import java.sql.Connection
 import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.sql.Statement
 import kotlin.reflect.full.declaredMemberProperties
 
 fun transaction(block: TransactionBuilder.() -> Unit): Boolean {
@@ -39,8 +41,20 @@ internal constructor(
         for (i in 1..psValues.size) {
             ps[i] = psValues[i - 1]
         }
-
         ps.executeUpdate()
+    }
+
+    fun execWithKeys(statement: String, psValues: Array<Any?> = arrayOf()): ResultSet? {
+        val ps = connection.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)
+        pss += ps
+        require(ps.parameterMetaData.parameterCount == psValues.size)
+        for (i in 1..psValues.size) {
+            ps[i] = psValues[i - 1]
+        }
+        ps.executeUpdate()
+        val rs = ps.generatedKeys
+
+        return if (rs.next()) rs else null
     }
 
     /**
