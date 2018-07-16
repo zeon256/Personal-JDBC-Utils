@@ -43,17 +43,11 @@ private var noOfTimesCalled = 0
  * Gets the database connection based on the config file provided
  * @return Connection?
  */
-fun getDbConnection(): Connection? {
+fun getDbConnection(): Connection {
     val jdbcDriver = dbConfig.driver
     val dbUrl = dbConfig.databaseUrl
-
-    return try {
-        Class.forName(jdbcDriver)
-        DriverManager.getConnection(dbUrl, dbConfig.databaseUser, dbConfig.databasePassword)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
+    Class.forName(jdbcDriver)
+    return DriverManager.getConnection(dbUrl, dbConfig.databaseUser, dbConfig.databasePassword)
 }
 
 /**
