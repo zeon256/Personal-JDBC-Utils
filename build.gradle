@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.31'
+    ext.kotlin_version = '1.2.51'
 
     repositories {
         mavenCentral()
@@ -17,7 +17,7 @@ plugins {
 }
 
 group 'com.budinverse.utils'
-version '0.6.2'
+version '0.6.3'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'

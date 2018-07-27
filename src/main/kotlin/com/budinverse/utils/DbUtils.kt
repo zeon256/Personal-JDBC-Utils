@@ -99,7 +99,8 @@ inline fun transaction(block: (Connection) -> Pair<PreparedStatement,Any?>): Uni
 fun Statement.genPreparedStatementTxnWithPK(dbConnection: Connection): PreparedStatement =
         dbConnection.prepareStatement(this, java.sql.Statement.RETURN_GENERATED_KEYS)
 
-inline fun manipulateTxn(statement: Statement,dbConnection: Connection,block: (PreparedStatement) -> Unit): Pair<PreparedStatement,Any?> {
+@Deprecated("ded")
+inline fun manipulateTxn(statement: Statement, dbConnection: Connection, block: (PreparedStatement) -> Unit): Pair<PreparedStatement,Any?> {
     val ps = statement.genPreparedStatementTxnWithPK(dbConnection)
     requireNotNull(ps) { "Invalid PreparedStatement" }
 

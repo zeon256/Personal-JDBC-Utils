@@ -57,6 +57,37 @@ internal constructor(
         return if (rs.next()) rs else null
     }
 
+    fun <T> query(statement: String, psValues: Array<Any?> = arrayOf(), block: (ResultSet) -> T): T? {
+        val ps = connection.prepareStatement(statement)
+        pss += ps
+        require(ps.parameterMetaData.parameterCount == psValues.size)
+        for (i in 1..psValues.size) {
+            ps[i] = psValues[i - 1]
+        }
+        val resultSet = ps.executeQuery()
+        return if (resultSet.next()) {
+            block(resultSet)
+        } else {
+            null
+        }
+    }
+
+    fun <T> queryList(statement: String, psValues: Array<Any?> = arrayOf(), block: (ResultSet) -> T): List<T> {
+        val list = mutableListOf<T>()
+        val ps = connection.prepareStatement(statement)
+        pss += ps
+        require(ps.parameterMetaData.parameterCount == psValues.size)
+        for (i in 1..psValues.size) {
+            ps[i] = psValues[i - 1]
+        }
+
+        val resultSet = ps.executeQuery()
+        while (resultSet.next())
+            list.add(block(resultSet))
+
+        return list
+    }
+
     /**
      * **WARNING: UNTESTED! USES REFLECTION!**
      */
