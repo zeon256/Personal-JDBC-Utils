@@ -34,6 +34,8 @@ internal constructor(
         connection.autoCommit = false
     }
 
+    fun exec(statement: String) = connection.prepareStatement(statement).executeUpdate()
+
     fun exec(statement: String, psValues: Array<Any?> = arrayOf()) {
         val ps = connection.prepareStatement(statement)
         pss += ps
