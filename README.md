@@ -1,3 +1,5 @@
+ # This project is dead and no longer maintained! Users should use [medusa](https://github.com/BudiNverse/medusa) instead!
+ 
  [ ![Download](https://api.bintray.com/packages/budinverse/utils/JDBCUtils/images/download.svg) ](https://bintray.com/budinverse/utils/JDBCUtils/_latestVersion)
  [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
  
